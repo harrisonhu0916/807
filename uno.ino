@@ -736,8 +736,6 @@ int loadphoneBookNamesForwards(int startingIndex, int n)//这个功能应该没�
         phoneBookNames[i][ENTRY_SIZE - 1] = 0;
         strncpy(phoneBookNumbers[i], pb.number, ENTRY_SIZE);
         phoneBookNumbers[i][ENTRY_SIZE - 1] = 0;
-        phoneBookHasDateTime[i] = pb.gotTime;
-        if (pb.gotTime) memcpy(&phoneBookDateTimes[i], &pb.datetime, sizeof(DateTime));
         if (pb.getPhoneBookType() != PHONEBOOK_SIM) {
           phoneBookNames[i][0] = 0; // the names in the call logs are never accurate (but sometimes present)
           phoneNumberToName(phoneBookNumbers[i], phoneBookNames[i], ENTRY_SIZE); // reuses / overwrites pb
