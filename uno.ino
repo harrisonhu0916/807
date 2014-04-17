@@ -1,6 +1,8 @@
 #include <GSM.h>
 #include <PhoneBook.h>
 #include <SoftwareSerial.h>
+#include <GSM3MobileVoiceProvider.h>
+
 SoftwareSerial SIM900(0, 1);
 
 GSMVoiceCall vcs(false);
