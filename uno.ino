@@ -1,9 +1,7 @@
 #include <GSM.h>
 #include <GSM3Serial1.h>
 #include <PhoneBook.h>
-#include <SoftwareSerial.h>
-SoftwareSerial SIM900(0, 1);
-//GSM gsmAccess(true);
+
 GSMVoiceCall vcs(false);
 GSM_SMS sms(false);
 GSMScanner scannerNetworks;
@@ -93,8 +91,6 @@ int phoneBookCacheSize;
 
 Adafruit_ILI9340 tft = Adafruit_ILI9340(_cs, _dc, _rst);
 
-
-
 int redLED = A5;
 int greenLED =A4;
 int leftButton = A3;
@@ -110,7 +106,6 @@ int a3 = 0;
 int a4 = 0;
 int a5 = 0;
 
-
 const byte ROWS = 4; 
 const byte COLS = 3; 
 char keys[ROWS][COLS] = {
@@ -124,12 +119,8 @@ byte colPins[COLS] = {6, 7, 8};
 
 Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 
-
 char number[20];//输入最长字符长度
 char name[20];
-
-
-
 
 #define SCREEN_WIDTH 14
 #define ENTRY_SIZE 20
@@ -141,7 +132,6 @@ EntryField entryField;
 
 char text[161];
 int textline;
-
 
 char uppercase[10][10] = { 
   { ' ', '0', 0 },
@@ -178,9 +168,7 @@ boolean shiftNextKey;
 
 boolean unlocking, blank;
 //-----------------------------------------------------------------
-//
 //initialization 到此结束
-//
 //-----------------------------------------------------------------
 void setup() {
   Serial.begin(19200);
@@ -207,9 +195,7 @@ void setup() {
   tft.println("done.");
 }
 //-------------------------------------------------------------------
-//
 //setup(void)到此结束
-//
 //-------------------------------------------------------------------
 void loop(){
   tft.fillScreen(ILI9340_BLACK);
@@ -219,9 +205,6 @@ void loop(){
   a2 = analogRead(A2);
   a3 = analogRead(A3);
 //------------------------------
-  
-
-//
   tft.setTextColor(ILI9340_BLACK);
   
   GSM3_voiceCall_st voiceCallStatus = vcs.getvoiceCallStatus();
@@ -254,7 +237,6 @@ void loop(){
       if (mode == HOME || (mode == LOCKED && unlocking)) {        
         tft.setTextColor(ILI9340_WHITE, ILI9340_BLACK);
         tft.print("     ");
-
 //--------------------------------
 //信号管理
 tft.setTextColor(ILI9340_BLACK);
@@ -264,18 +246,13 @@ if (signalQuality != 99)
 //---------------------------------
     }
 }
-
 //-------------------------------------------------------------
-//-------------------------------------------------------------
-//--
 if (mode == MISSEDCALLALERT) {     //mode::4: MissedCallAlert
         tft.print("Missed: ");
         tft.println(missed);
         tft.println("Last from: ");
         tft.println(NAME_OR_NUMBER());
         softKeys("close", "call");
-//-------------------------------------------------------------
-//--
         if (a3 > 500) { //Left key
           missed = 0;
           mode = interruptedmode;
@@ -285,8 +262,7 @@ if (mode == MISSEDCALLALERT) {     //mode::4: MissedCallAlert
           mode = interruptedmode;
           vcs.voiceCall(number);
         }
-//---------------------------------------------------------------
-//--
+
       } else if (mode == TEXTALERT) // mode::5:  TextAlert
               if (initmode) {
           sms.remoteNumber(number, sizeof(number));
@@ -331,20 +307,19 @@ if (mode == MISSEDCALLALERT) {     //mode::4: MissedCallAlert
           unlocking = false;//锁屏幕和解锁
           blank = false;
         }
-//-------------------------------------------
-if (unlocking) {
+        if (unlocking) {
           softKeys("Unlock");
           if (a3 > 500) { mode = HOME; unlocking = false; }
-if (a2 > 500) { lastKeyPressTime = millis(); }
-if (millis() - lastKeyPressTime > 3000) unlocking = false;
-} else {
-if (key) {
+        if (a2 > 500) { lastKeyPressTime = millis(); }
+        if (millis() - lastKeyPressTime > 3000) unlocking = false;
+          } else {
+          if (key) {
             unlocking = true;
             lastKeyPressTime = millis();
           }
-}
-} else if (mode == HOME) {
-        softKeys("lock", "menu");		//mode:: 7: home
+        }
+       }else if (mode == HOME) {
+        softKeys("lock", "menu");		//mode:: 7: home主页
         
         if ((key >= '0' && key <= '9') || key == '#') {
           lastKeyPressTime = millis();
@@ -360,7 +335,7 @@ if (key) {
         } else if (a2 >0) {
           mode = PHONEBOOK;
         }
-      } else if (mode == DIAL) {		//mode:: 8: dial
+      } else if (mode == DIAL) {		//mode:: 8: dial拨号
         numberInput(key, number, sizeof(number));
         softKeys("back", "call");
         
@@ -395,7 +370,7 @@ if (key) {
         for (int i = 0; i < NUMPHONEBOOKLINES; i++) {
           if (i == phoneBookLine) tft.setTextColor(ILI9340_WHITE, ILI9340_BLACK);
           else tft.setTextColor(ILI9340_BLACK);
-if (strlen(phoneBookNames[i]) > 0) {
+      if (strlen(phoneBookNames[i]) > 0) {
             for (int j = 0; j < SCREEN_WIDTH && phoneBookNames[i][j]; j++) screen.print(phoneBookNames[i][j]);
             if (strlen(phoneBookNames[i]) < SCREEN_WIDTH) screen.println();
           } else if (strlen(phoneBookNumbers[i]) > 0) {
@@ -403,12 +378,12 @@ if (strlen(phoneBookNames[i]) > 0) {
             if (strlen(phoneBookNumbers[i]) < SCREEN_WIDTH) screen.println();
           } else if (phoneBookIndices[i] != 0) {
             screen.println("Unknown");
-}
+          }
         }
         softKeys("back", "okay");
         
         if (a3 > 500) mode = HOME;
-else if (a0>500) {
+        else if (a0>500) {
           backmode = mode;
           if (mode == PHONEBOOK) {
             mode = MENU;
@@ -568,7 +543,7 @@ if (a3 >500) {
 prevVoiceCallStatus = voiceCallStatus;
 }
 
-11. Handler for program above
+// Handler for program above
 boolean checkForCommandReady(GSM3ShieldV1BaseProvider &provider, int timeout)
 {
   unsigned long commandStartTime = millis();
@@ -657,14 +632,12 @@ boolean savePhoneBookEntry(int index, char *name, char *number) {
     while (!pb.ready());
     if (pb.ready() == 1) phoneBookCache[index] = hashPhoneNumber(number);
   }
-  
   return true;
 }
 
 void cachePhoneBook()
 {
   int type;
-  
   pb.queryPhoneBook();
   while (!pb.ready());
   type = pb.getPhoneBookType();
@@ -709,7 +682,7 @@ long hashPhoneNumber(char *s)
   return l;
 }
 
-// return true on success, false on failure.
+// return true on success, false on failure.返回true成功， 返回false失败
 boolean phoneNumberToName(char *number, char *name, int namelen)
 {
   if (number[0] == 0) return false;
@@ -743,18 +716,15 @@ boolean phoneNumberToName(char *number, char *name, int namelen)
         while (!pb.ready());
         delay(300);
       }
-      
       return success;
     }
   }
-  
   return false;
 }
 
 int loadphoneBookNamesForwards(int startingIndex, int n)//这个功能应该没有吧
 {
   int i = 0;
-  
   if (pb.getPhoneBookUsed() > 0) {
     for (; startingIndex <= phoneBookSize; startingIndex++) {
       pb.readPhoneBookEntry(startingIndex);
@@ -783,7 +753,6 @@ int loadphoneBookNamesForwards(int startingIndex, int n)//这个功能应该没�
     phoneBookNumbers[i][0] = 0;
     phoneBookHasDateTime[i] = false;
   }
-  
   return startingIndex + 1;
 }
 
@@ -834,7 +803,6 @@ void numberInput(char key, char *buf, int len) //数字输入
     tft.print(" ");
     tft.setTextColor(ILI9340_BLACK);
   }
-  
   if (key >= '0' && key <= '9') {
     if (i < len - 1) { buf[i] = key; buf[i + 1] = 0; }
   }
@@ -865,7 +833,6 @@ void textInput(char key, char *buf, int len)
     tft.setTextColor(ILI9340_BLACK);
   }
   tft.println();
-  
   if (key >= '0' && key <= '9') {
     if (millis() - lastKeyPressTime > 1000 || key - '0' != lastKey) {
       // append new letter
@@ -894,8 +861,6 @@ void textInput(char key, char *buf, int len)
         
         shiftNextKey = false;
       }
-      
-
     lastKeyPressTime = millis();
   }
   if (key == '*') {
