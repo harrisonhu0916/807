@@ -3,8 +3,6 @@
 #include <SoftwareSerial.h>
 SoftwareSerial SIM900(0, 1);
 
-
-
 GSMVoiceCall vcs(false);
 GSM_SMS sms(false);
 GSMScanner scannerNetworks;
